@@ -50,6 +50,12 @@ android {
 }
 
 dependencies {
+    implementation(libs.lottie.compose)
+    implementation(libs.colorpicker.compose)
+    implementation(libs.androidx.datastore.preferences)
+
+    implementation ("com.google.accompanist:accompanist-pager:0.28.0")
+    implementation ("androidx.compose.foundation:foundation:1.5.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -61,6 +67,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
+//    implementation(libs.androidx.datastore.core.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -1,5 +1,6 @@
 package com.example.app_volleyball_finalandroid.views
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -13,8 +14,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.android_final.R
 import com.example.android_final.components.PersonaButton
 
 
@@ -26,7 +29,7 @@ fun MenuView(navController: NavController) {
             TopAppBar(
                 title = {
                     Text(
-                        text = "marcador de voleibol",
+                        text = "Menu de voleibol",
                         style = MaterialTheme.typography.headlineLarge
                     )
                 },
@@ -50,6 +53,9 @@ fun MenuView(navController: NavController) {
             PersonaButton(text = "Partido", onClick = { navController.navigate("/marcador") })
             Spacer(modifier = Modifier.height(16.dp))
             PersonaButton(text = "Historial", onClick = { navController.navigate("/historial") })
+            Spacer(modifier = Modifier.height(30.dp))
+
+            Image(painter = painterResource(id = R.drawable.img_volley), contentDescription = "menu")
         }
     }
 }

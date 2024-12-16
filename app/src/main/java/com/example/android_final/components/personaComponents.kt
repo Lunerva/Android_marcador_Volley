@@ -22,8 +22,8 @@ fun PersonaButton( text:String, onClick:()->Unit){
             .padding(8.dp)
             .clip(RoundedCornerShape(12.dp)), //bordes redondeados
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Black, //botón negro
-            contentColor = Color(0xFF00FF93) //texto rojo vibrante
+            containerColor = Color.Black, //boton negro
+            contentColor = Color(0xFFFFFFFF)
         )
     ) {
         Text(

@@ -82,7 +82,7 @@ val PersonaTypography = Typography(
 
 // Esquema de colores
 val PersonaColors = lightColorScheme(
-    primary = Color(0xFF00FF93), //rojo vibrante
+    primary = Color(0xFF00FF93),
     onPrimary = Color.White,
     secondary = Color.Black,
     onSecondary = Color.White,

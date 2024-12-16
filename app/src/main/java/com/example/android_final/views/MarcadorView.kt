@@ -1,5 +1,7 @@
 package com.example.android_final.views
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,48 +17,108 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.android_final.components.PersonaButton
+import com.github.skydoves.colorpicker.compose.HsvColorPicker
+import com.github.skydoves.colorpicker.compose.rememberColorPickerController
+
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
+@OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.O)//necesario para la fecha
 @Composable
 fun MarcadorView(navController: NavController) {
-    //define el estado de los puntos y sets para los equipos
     var puntosEquipoA by remember { mutableStateOf(0) }
     var puntosEquipoB by remember { mutableStateOf(0) }
     var setsEquipoA by remember { mutableStateOf(0) }
     var setsEquipoB by remember { mutableStateOf(0) }
+    var colorEquipo1 by remember { mutableStateOf(Color(0xFF00FF93)) }
+    var colorEquipo2 by remember { mutableStateOf(Color(0xFF00FF93)) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.SpaceBetween, //distribuye uniformemente los elementos
-        horizontalAlignment = Alignment.CenterHorizontally //centra horizontalmente
-    ) {
-        //muestra los marcadores de ambos equipos
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            EquipoMarcador("equipo a", puntosEquipoA, setsEquipoA) { puntosEquipoA += it }
-            EquipoMarcador("equipo b", puntosEquipoB, setsEquipoB) { puntosEquipoB += it }
+    val fechaActual = remember {
+        LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Marcador de voleibol",
+                        style = MaterialTheme.typography.headlineLarge
+                    )
+                },
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = Color.Black,
+                    titleContentColor = Color.White
+                )
+            )
         }
-        //boton para guardar el marcador
-        PersonaButton(
-            text = "guardar marcador",
-            onClick = {
-                //insertar logica para guardar datos
-            }
-        )
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = fechaActual,
+                style = MaterialTheme.typography.headlineLarge,
+                textAlign = TextAlign.Center
+            )
+            EquipoMarcador(
+                equipo = "Equipo A",
+                puntos = puntosEquipoA,
+                sets = setsEquipoA,
+                onPuntosChange = { delta ->
+                    val nuevosPuntos = (puntosEquipoA + delta).coerceAtLeast(0)
+                    if (nuevosPuntos > 24) {
+                        setsEquipoA += 1
+                        puntosEquipoA = 0
+                        puntosEquipoB = 0
+                    } else {
+                        puntosEquipoA = nuevosPuntos
+                    }
+                },
+                onColorChange = { colorEquipo1 = it },
+                colorEquipo = colorEquipo1
+            )
+            EquipoMarcador(
+                equipo = "Equipo B",
+                puntos = puntosEquipoB,
+                sets = setsEquipoB,
+                onPuntosChange = { delta ->
+                    val nuevosPuntos = (puntosEquipoB + delta).coerceAtLeast(0)
+                    if (nuevosPuntos > 24) {
+                        setsEquipoB += 1
+                        puntosEquipoA = 0
+                        puntosEquipoB = 0
+                    } else {
+                        puntosEquipoB = nuevosPuntos
+                    }
+                },
+                onColorChange = { colorEquipo2 = it },
+                colorEquipo = colorEquipo2
+            )
 
-        //boton para reiniciar el marcador
-        PersonaButton(
-            text = "reiniciar marcador",
-            onClick = {
-                puntosEquipoA = 0
-                puntosEquipoB = 0
-                setsEquipoA = 0
-                setsEquipoB = 0
-            }
-        )
+            PersonaButton(
+                text = "Guardar marcador",
+                onClick = {
+                    //implementar logica para guardar el marcador
+                }
+            )
+
+            PersonaButton(
+                text = "Reiniciar marcador",
+                onClick = {
+                    puntosEquipoA = 0
+                    puntosEquipoB = 0
+                    setsEquipoA = 0
+                    setsEquipoB = 0
+                }
+            )
+        }
     }
 }
 
@@ -65,49 +127,76 @@ fun EquipoMarcador(
     equipo: String,
     puntos: Int,
     sets: Int,
-    onPuntosChange: (Int) -> Unit
+    onPuntosChange: (Int) -> Unit,
+    onColorChange: (Color) -> Unit,
+    colorEquipo: Color
 ) {
+    var mostrarColorPicker by remember { mutableStateOf(false) }
+    val colorPickerController = rememberColorPickerController()
+
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally, //centra el contenido horizontalmente
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .padding(16.dp)
-            .clip(RoundedCornerShape(12.dp)) //bordes redondeados
-            .background(Color(0xFF00E4FF)) //fondo de color...
-            .padding(16.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(colorEquipo)
     ) {
-        //nombre del equipo
         Text(
             text = equipo.uppercase(),
-            fontSize = 20.sp,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            color = Color.White, //texto en blanco
-            style = MaterialTheme.typography.headlineLarge // tipografía personalizada
+            color = Color.Black,
+            style = MaterialTheme.typography.headlineLarge
         )
-        //puntos actuales
         Text(
-            text = "puntos: $puntos",
-            fontSize = 18.sp,
-            color = Color.White, //texto en blanco
-            modifier = Modifier.padding(top = 8.dp),
-            style = MaterialTheme.typography.headlineLarge // tipografía personalizada
+            text = "Puntos: $puntos",
+            fontSize = 22.sp,
+            color = Color.Black,
+            style = MaterialTheme.typography.headlineLarge
         )
-        //sets ganados
         Text(
-            text = "sets: $sets",
+            text = "Sets: $sets",
             fontSize = 18.sp,
-            color = Color.White, //texto en blanco
-            modifier = Modifier.padding(top = 8.dp),
-            style = MaterialTheme.typography.headlineLarge // tipografía personalizada
+            color = Color.Black,
+            style = MaterialTheme.typography.headlineLarge
         )
-
-        //botones para ajustar puntos
         Row(
-            horizontalArrangement = Arrangement.SpaceEvenly, //espacia los botones uniformemente
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxWidth()
         ) {
             PersonaButton(text = "-1", onClick = { onPuntosChange(-1) })
             PersonaButton(text = "+1", onClick = { onPuntosChange(1) })
+        }
+        PersonaButton(
+            text = "Cambiar Color",
+            onClick = { mostrarColorPicker = true }
+        )
+        if (mostrarColorPicker) {
+            AlertDialog(
+                onDismissRequest = { mostrarColorPicker = false },
+                title = { Text("Selecciona un color") },
+                text = {
+                    Box(
+                        modifier = Modifier
+                            .height(150.dp)
+                            .fillMaxWidth()
+                    ) {
+                        HsvColorPicker(
+                            controller = colorPickerController,
+                            modifier = Modifier.fillMaxSize(),
+                            onColorChanged = { colorEnvelope ->
+                                onColorChange(colorEnvelope.color)
+                            }
+                        )
+                    }
+                },
+                confirmButton = {
+                    PersonaButton(
+                        text = "Aceptar",
+                        onClick = { mostrarColorPicker = false }
+                    )
+                }
+            )
         }
     }
 }
